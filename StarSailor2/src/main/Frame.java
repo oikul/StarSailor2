@@ -11,6 +11,7 @@ import menu.MainMenu;
 import menu.NewGameMenu;
 import utils.AbstractMain;
 import utils.InputHandler;
+import utils.MathHelper;
 import utils.State;
 
 public class Frame extends AbstractMain {
@@ -73,7 +74,11 @@ public class Frame extends AbstractMain {
 			break;
 		case NEW_GAME_MENU:
 			if (newGameMenu.createGame) {
-				galaxy = new Galaxy(Long.parseLong(newGameMenu.seedText));
+				if(!newGameMenu.seedText.equals("")){
+					galaxy = new Galaxy(Long.parseLong(newGameMenu.seedText, Character.MAX_RADIX));
+				}else{
+					galaxy = new Galaxy(MathHelper.random.nextLong());
+				}
 				remove(newGameMenu);
 				add(galaxy);
 				repaint();
