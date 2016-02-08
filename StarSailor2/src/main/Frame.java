@@ -128,11 +128,7 @@ public class Frame extends AbstractMain {
 			break;
 		case SURFACE_PLANETRY:
 			break;
-		case SURFACE_MOON:
-			break;
-		case SURFACE_ASTEROID:
-			break;
-		case SPACE_STATION:
+		case SATELLITE:
 			break;
 		case DUNGEON:
 			break;
@@ -171,11 +167,7 @@ public class Frame extends AbstractMain {
 			break;
 		case SURFACE_PLANETRY:
 			break;
-		case SURFACE_MOON:
-			break;
-		case SURFACE_ASTEROID:
-			break;
-		case SPACE_STATION:
+		case SATELLITE:
 			break;
 		case DUNGEON:
 			break;
