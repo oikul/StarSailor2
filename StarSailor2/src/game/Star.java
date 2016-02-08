@@ -47,7 +47,7 @@ public class Star extends PlanetryBody {
 		switch(State.state){
 		case GALACTIC:
 			g2d.setColor(Color.cyan);
-			g2d.drawLine((int) destination.x, (int) destination.y, (int) position.x, (int) position.y);
+			g2d.drawLine((int) position.x, (int) position.y, (int) destination.x, (int) destination.y);
 			g2d.setColor(color);
 			g2d.fillOval((int) position.x, (int) position.y, (int) size, (int) size);
 			break;

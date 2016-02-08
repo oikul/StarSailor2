@@ -25,7 +25,7 @@ public class Galaxy extends JPanel {
 	public Galaxy(long seed) {
 		MathHelper.setRandomSeed(seed);
 		NoiseGenerator gen = new NoiseGenerator(seed);
-		this.spaaace = new BufferedImage(16384 / 6, 16384 / 6, BufferedImage.TYPE_INT_ARGB);
+		/*this.spaaace = new BufferedImage(16384 / 6, 16384 / 6, BufferedImage.TYPE_INT_ARGB);
 		double[][] red = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
 		double[][] green = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
 		double[][] blue = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
@@ -35,7 +35,7 @@ public class Galaxy extends JPanel {
 				g.setColor(new Color((int) (red[i][j] * 150),(int) (green[i][j] * 100),(int) (blue[i][j] * 150)));
 				g.fillRect(i * 3, j * 3, 3, 3);
 			}
-		}
+		}*/
 		galaxy = new Star[numOfStars];
 		solarSystems = new PlanetryBody[numOfStars][maxNumOfPlanets];
 		planets = new PlanetryBody[maxNumOfPlanets][maxNumOfSatellites];
@@ -89,9 +89,11 @@ public class Galaxy extends JPanel {
 			galaxy[i] = new Star(MathHelper.random.nextDouble() * 16384, MathHelper.random.nextDouble() * 360, MathHelper.random.nextDouble() * 5, color);
 		}
 		for(int i = 0; i < galaxy.length; i++){
+			double closest = 2000;
 			for(int j = 0; j < galaxy.length; j++){
-				if(MathHelper.getDistance(galaxy[i].getPosition(), galaxy[j].getPosition()) < 50){
+				if(MathHelper.getDistance(galaxy[i].getPosition(), galaxy[j].getPosition()) < closest && i != j){
 					galaxy[i].addHyperSpaceLane(galaxy[j].getPosition(), j);
+					closest = MathHelper.getDistance(galaxy[i].getPosition(), galaxy[j].getPosition());
 				}
 			}
 		}
@@ -102,6 +104,8 @@ public class Galaxy extends JPanel {
 		case GALACTIC:
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].update();
+			}
+			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].updateHyperSpaceLane(galaxy[galaxy[i].getIndexOfDestination()].getPosition());
 			}
 			break;
