@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import utils.InputHandler;
+import utils.MathHelper;
+import utils.NoiseGenerator;
 import utils.PlanetaryBody;
 import utils.State;
 
@@ -12,6 +14,24 @@ public class Star extends PlanetaryBody {
 
 	private Point2D.Double destination;
 	private int indexOfDestination;
+	private String name;
+	private boolean discovered = false;
+
+	String[] namePart = { "en", "la", "can", 
+			"be", "and", "phi", "eth", "ol", 
+			"ve", "ho", "a", "lia", "an", 
+			"ar", "ur", "mi", "in", "ti", 
+			"qu", "so", "ed", "ess", "ex",
+			"io", "ce", "ze", "fa", "ay",
+			"wa", "da", "ack", "gre", "bio", 
+			"chrom", "chron", "cap", "dict", "dom",
+			"fer", "gen",  "geo", "ject", "luc",
+			"mal", "nal", "phil", "pos", "spec", 
+			"vac", "ven", "ver", "bi", "di", "dis",
+			"mis", "neo", "er", "or", "ant",
+			"ent", "ess", "ian", "ist", "ize",
+			"luk", "hut", "tat", "oo", "ine",
+			"a", "e", "i", "o", "u"};
 
 	public Star(double distance, double angle, double size, Color color) {
 		super(distance, angle, size, color);
@@ -25,6 +45,10 @@ public class Star extends PlanetaryBody {
 			getXAndY();
 			break;
 		case SOLAR:
+			if(!discovered){
+				discovered = true;
+				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
+			}
 			break;
 		case PLANETARY:
 			break;
