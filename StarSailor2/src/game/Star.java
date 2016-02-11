@@ -17,24 +17,9 @@ public class Star extends PlanetaryBody {
 	private String name;
 	private boolean discovered = false;
 
-	String[] namePart = { "en", "la", "can", 
-			"be", "and", "phi", "eth", "ol", 
-			"ve", "ho", "a", "lia", "an", 
-			"ar", "ur", "mi", "in", "ti", 
-			"qu", "so", "ed", "ess", "ex",
-			"io", "ce", "ze", "fa", "ay",
-			"wa", "da", "ack", "gre", "bio", 
-			"chrom", "chron", "cap", "dict", "dom",
-			"fer", "gen",  "geo", "ject", "luc",
-			"mal", "nal", "phil", "pos", "spec", 
-			"vac", "ven", "ver", "bi", "di", "dis",
-			"mis", "neo", "er", "or", "ant",
-			"ent", "ess", "ian", "ist", "ize",
-			"luk", "hut", "tat", "oo", "ine",
-			"a", "e", "i", "o", "u"};
-
 	public Star(double distance, double angle, double size, Color color) {
 		super(distance, angle, size, color);
+		System.out.println(NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2));
 	}
 
 	@Override
@@ -48,6 +33,7 @@ public class Star extends PlanetaryBody {
 			if(!discovered){
 				discovered = true;
 				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
+				System.out.println(name);
 			}
 			break;
 		case PLANETARY:

@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
 
@@ -17,13 +16,11 @@ public class Galaxy extends JPanel {
 	private Star[] galaxy;
 	private PlanetaryBody[][] solarSystems;
 	private PlanetaryBody[][] planets;
-	private final int numOfStars = 4096, maxNumOfPlanets = 16, maxNumOfSatellites = 8;
+	private final int numOfStars = 8192, maxNumOfPlanets = 16, maxNumOfSatellites = 8;
 	private int currentStar, currentPlanet, currentSatellite;
-	private InputHandler input;
 
 	public Galaxy(long seed, InputHandler input) {
 		MathHelper.setRandomSeed(seed);
-		this.input = input;
 		galaxy = new Star[numOfStars];
 		solarSystems = new PlanetaryBody[numOfStars][maxNumOfPlanets];
 		planets = new PlanetaryBody[maxNumOfPlanets][maxNumOfSatellites];
@@ -74,7 +71,7 @@ public class Galaxy extends JPanel {
 				color = new Color(0, 255, 255);
 				break;
 			}
-			galaxy[i] = new Star(MathHelper.random.nextDouble() * 16384, MathHelper.random.nextDouble() * 360,
+			galaxy[i] = new Star(MathHelper.random.nextDouble() * 32768, MathHelper.random.nextDouble() * 360,
 					MathHelper.random.nextDouble() * 5, color);
 		}
 		for (int i = 0; i < galaxy.length; i++) {
@@ -91,47 +88,8 @@ public class Galaxy extends JPanel {
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
-			boolean up, left, right, down;
-			if (input.isKeyDown(KeyEvent.VK_W)) {
-				System.out.println("pan up");
-				up = true;
-			} else {
-				up = false;
-			}
-			if (input.isKeyDown(KeyEvent.VK_A)) {
-				left = true;
-			} else {
-				left = false;
-			}
-			if (input.isKeyDown(KeyEvent.VK_S)) {
-				down = true;
-			} else {
-				down = false;
-			}
-			if (input.isKeyDown(KeyEvent.VK_D)) {
-				right = true;
-			} else {
-				right = false;
-			}
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].update();
-				if (up && left) {
-					galaxy[i].panUL(1 / MathHelper.root2);
-				} else if (up && right) {
-					galaxy[i].panUR(1 / MathHelper.root2);
-				} else if (down && left) {
-					galaxy[i].panDL(1 / MathHelper.root2);
-				} else if (down && right) {
-					galaxy[i].panDR(1 / MathHelper.root2);
-				}else if(up){
-					galaxy[i].panUp(1);
-				}else if(left){
-					galaxy[i].panLeft(1);
-				}else if(down){
-					galaxy[i].panRight(1);
-				}else if(right){
-					galaxy[i].panDown(1);
-				}
 			}
 			for (int i = 0; i < numOfStars; i++) {
 				if (galaxy[i].getIndexOfDestination() != 0) {
