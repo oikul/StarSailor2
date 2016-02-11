@@ -23,18 +23,6 @@ public class Galaxy extends JPanel {
 
 	public Galaxy(long seed, InputHandler input) {
 		MathHelper.setRandomSeed(seed);
-		//NoiseGenerator gen = new NoiseGenerator(seed);
-		/*this.spaaace = new BufferedImage(16384 / 6, 16384 / 6, BufferedImage.TYPE_INT_ARGB);
-		double[][] red = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
-		double[][] green = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
-		double[][] blue = gen.getPerlinNoise(16384 / 6, 16384 / 6, MathHelper.random.nextInt(16) + 2, MathHelper.random.nextInt(16) + 2);
-		Graphics g = spaaace.getGraphics();
-		for(int i = 0; i < 16384 / 6; i++){
-			for(int j = 0; j < 16384 / 6; j++){
-				g.setColor(new Color((int) (red[i][j] * 150),(int) (green[i][j] * 100),(int) (blue[i][j] * 150)));
-				g.fillRect(i * 3, j * 3, 3, 3);
-			}
-		}*/
 		this.input = input;
 		galaxy = new Star[numOfStars];
 		solarSystems = new PlanetaryBody[numOfStars][maxNumOfPlanets];
