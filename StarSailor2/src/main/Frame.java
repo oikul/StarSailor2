@@ -22,6 +22,7 @@ public class Frame extends AbstractMain {
 	private LoadGameMenu loadGameMenu;
 	private ConnectMenu connectMenu;
 	private Galaxy galaxy;
+	private InputHandler input;
 
 	public static void main(String[] args) {
 		Frame frame = new Frame();
@@ -33,6 +34,7 @@ public class Frame extends AbstractMain {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Star Sailor 2");
 		setSize(InputHandler.screenSize);
+		input = new InputHandler(this);
 		menu = new MainMenu();
 		newGameMenu = new NewGameMenu();
 		loadGameMenu = new LoadGameMenu();
@@ -75,9 +77,9 @@ public class Frame extends AbstractMain {
 		case NEW_GAME_MENU:
 			if (newGameMenu.createGame) {
 				if(!newGameMenu.seedText.equals("")){
-					galaxy = new Galaxy(Long.parseLong(newGameMenu.seedText, Character.MAX_RADIX));
+					galaxy = new Galaxy(Long.parseLong(newGameMenu.seedText, Character.MAX_RADIX), input);
 				}else{
-					galaxy = new Galaxy(MathHelper.random.nextLong());
+					galaxy = new Galaxy(MathHelper.random.nextLong(), input);
 				}
 				remove(newGameMenu);
 				add(galaxy);
@@ -124,9 +126,9 @@ public class Frame extends AbstractMain {
 			break;
 		case SOLAR:
 			break;
-		case PLANETRY:
+		case PLANETARY:
 			break;
-		case SURFACE_PLANETRY:
+		case SURFACE_PLANETARY:
 			break;
 		case SATELLITE:
 			break;
@@ -163,9 +165,9 @@ public class Frame extends AbstractMain {
 			break;
 		case SOLAR:
 			break;
-		case PLANETRY:
+		case PLANETARY:
 			break;
-		case SURFACE_PLANETRY:
+		case SURFACE_PLANETARY:
 			break;
 		case SATELLITE:
 			break;
