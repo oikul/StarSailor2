@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import utils.InputHandler;
+import utils.MathHelper;
+import utils.NoiseGenerator;
 import utils.PlanetaryBody;
 import utils.State;
 
@@ -23,6 +25,11 @@ public class Planet extends PlanetaryBody {
 			getXAndY();
 			break;
 		case PLANETARY:
+			if(!discovered){
+				discovered = true;
+				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
+				System.out.println(name);
+			}
 			break;
 		case SURFACE_PLANETARY:
 			break;

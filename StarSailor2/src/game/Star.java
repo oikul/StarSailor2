@@ -14,12 +14,9 @@ public class Star extends PlanetaryBody {
 
 	private Point2D.Double destination;
 	private int indexOfDestination;
-	private String name;
-	private boolean discovered = false;
 
 	public Star(double distance, double angle, double size, Color color) {
 		super(distance, angle, size, color);
-		System.out.println(NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2));
 	}
 
 	@Override
@@ -33,7 +30,6 @@ public class Star extends PlanetaryBody {
 			if(!discovered){
 				discovered = true;
 				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
-				System.out.println(name);
 			}
 			break;
 		case PLANETARY:

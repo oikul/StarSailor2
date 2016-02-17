@@ -2,6 +2,9 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
@@ -18,9 +21,14 @@ public class Galaxy extends JPanel {
 	private PlanetaryBody[][] planets;
 	private final int numOfStars = 8192, maxNumOfPlanets = 16, maxNumOfSatellites = 8;
 	private int currentStar, currentPlanet, currentSatellite;
+	private InputHandler input;
+	private double zoom = 1.0;
+	private AffineTransform at;
 
 	public Galaxy(long seed, InputHandler input) {
 		MathHelper.setRandomSeed(seed);
+		this.input = input;
+		at = new AffineTransform();
 		galaxy = new Star[numOfStars];
 		solarSystems = new PlanetaryBody[numOfStars][maxNumOfPlanets];
 		planets = new PlanetaryBody[maxNumOfPlanets][maxNumOfSatellites];
@@ -83,11 +91,36 @@ public class Galaxy extends JPanel {
 				}
 			}
 		}
+		currentStar = MathHelper.random.nextInt(numOfStars);
 	}
 
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
+			if(input.isMouseDown(MouseEvent.BUTTON1)){
+				for(int i = 0; i < numOfStars; i++){
+					if(new Rectangle((int)galaxy[i].getPosition().x - 3, (int)galaxy[i].getPosition().y - 3, 6, 6).contains(input.getMousePositionOnScreen())){
+						galaxy[i].setSelected(true);
+						currentStar = i;
+					}else{
+						galaxy[i].setSelected(false);
+					}
+				}
+			}
+			if(input.getMouseWheelUp()){
+				if(zoom < 3.0){
+					zoom += 0.1;
+				}else{
+					State.state = State.STATE.SOLAR;
+				}
+				input.stopMouseWheel();
+			}
+			if(input.getMouseWheelDown()){
+				if(zoom > 0.2){
+					zoom -= 0.1;
+				}
+				input.stopMouseWheel();
+			}
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].update();
 			}
@@ -131,6 +164,12 @@ public class Galaxy extends JPanel {
 	public void draw(Graphics2D g2d) {
 		switch (State.state) {
 		case GALACTIC:
+			at = new AffineTransform();
+			at.scale(zoom, zoom);
+			double xTrans = - (InputHandler.midPoint.x - InputHandler.screenSize.width/(zoom * 2));
+			double yTrans = - (InputHandler.midPoint.y - InputHandler.screenSize.height/(zoom * 2));
+			at.translate(xTrans, yTrans);
+			g2d.transform(at);
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].draw(g2d);
 			}
@@ -188,6 +227,18 @@ public class Galaxy extends JPanel {
 
 	public void setCurrentSattelite(int currentSattelite) {
 		this.currentSatellite = currentSattelite;
+	}
+
+	public double getZoom() {
+		return zoom;
+	}
+
+	public void setZoom(double zoom) {
+		this.zoom = zoom;
+	}
+	
+	public void incrementZoom(double amount){
+		zoom += amount;
 	}
 
 }
