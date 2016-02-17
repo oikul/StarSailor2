@@ -30,7 +30,7 @@ public class Star extends PlanetaryBody {
 		case SOLAR:
 			if(!discovered){
 				discovered = true;
-				name = noiseGen.generateName(MathHelper.random.nextInt(2) + 2);
+				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
 				noise = noiseGen.getPerlinNoise((int)size*10, (int)size*10, 8, 10);
 				System.out.println(name);
 			}

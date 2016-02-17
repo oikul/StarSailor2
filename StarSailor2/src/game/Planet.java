@@ -28,8 +28,8 @@ public class Planet extends PlanetaryBody {
 		case PLANETARY:
 			if(!discovered){
 				discovered = true;
-				name = noiseGen.generateName(MathHelper.random.nextInt(2) + 2);
 				noise = noiseGen.getPerlinNoise((int) size*10, (int) size*10, 4, 5);
+				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
 				System.out.println(name);
 			}
 			break;

@@ -32,6 +32,7 @@ public class Galaxy extends JPanel {
 		this.seed = seed;
 		MathHelper.setRandomSeed(this.seed);
 		this.input = input;
+		at = new AffineTransform();
 		galaxy = new Star[numOfStars];
 		solarSystems = new PlanetaryBody[numOfStars][maxNumOfPlanets];
 		planets = new PlanetaryBody[maxNumOfPlanets][maxNumOfSatellites];
