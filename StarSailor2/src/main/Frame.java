@@ -47,7 +47,6 @@ public class Frame extends AbstractMain {
 
 	@Override
 	public void update() {
-		requestFocus();
 		switch (State.state) {
 		case MAIN_MENU:
 			if (menu.isNewGame) {

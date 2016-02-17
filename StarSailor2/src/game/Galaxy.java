@@ -2,11 +2,10 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.Point2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 import javax.swing.JPanel;
 
@@ -29,6 +28,7 @@ public class Galaxy extends JPanel {
 	private AffineTransform at;
 
 	public Galaxy(long seed, InputHandler input) {
+		requestFocus();
 		this.seed = seed;
 		MathHelper.setRandomSeed(this.seed);
 		this.input = input;
@@ -84,7 +84,7 @@ public class Galaxy extends JPanel {
 				break;
 			}
 			galaxy[i] = new Star(MathHelper.random.nextDouble() * 32768, MathHelper.random.nextDouble() * 360,
-					MathHelper.random.nextDouble() * 5, color, seed + i);
+					MathHelper.random.nextDouble() * 10 + 1, color, seed + i);
 		}
 		for (int i = 0; i < galaxy.length; i++) {
 			double closest = 500;
@@ -102,40 +102,7 @@ public class Galaxy extends JPanel {
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
-			if(input.isMouseDown(MouseEvent.BUTTON1)){
-				for(int i = 0; i < numOfStars; i++){
-					if(new Rectangle((int)galaxy[i].getPosition().x - 3, (int)galaxy[i].getPosition().y - 3, 6, 6).contains(input.getMousePositionOnScreen())){
-						galaxy[i].setSelected(true);
-						currentStar = i;
-					}else{
-						galaxy[i].setSelected(false);
-					}
-				}
-			}
-			if(input.getMouseWheelUp()){
-				if(zoom < 3.0){
-					zoom += 0.1;
-				}else{
-					State.state = State.STATE.SOLAR;
-				}
-				input.stopMouseWheel();
-			}
-			if(input.getMouseWheelDown()){
-				if(zoom > 0.2){
-					zoom -= 0.1;
-				}
-				input.stopMouseWheel();
-			}
 			for (int i = 0; i < numOfStars; i++) {
-				if(input.isKeyDown(KeyEvent.VK_W)){
-					galaxy[i].panUp(1.0);
-				}else if(input.isKeyDown(KeyEvent.VK_A)){
-					galaxy[i].panLeft(1.0);
-				}else if(input.isKeyDown(KeyEvent.VK_S)){
-					galaxy[i].panDown(1.0);
-				}else if(input.isKeyDown(KeyEvent.VK_D)){
-					galaxy[i].panRight(1.0);
-				}
 				galaxy[i].update();
 			}
 			for (int i = 0; i < numOfStars; i++) {
@@ -145,8 +112,36 @@ public class Galaxy extends JPanel {
 					galaxy[i].updateHyperSpaceLane(newPos);
 				}
 			}
+			if (input.isMouseDown(MouseEvent.BUTTON1)) {
+				for (int i = 0; i < numOfStars; i++) {
+					if (new Rectangle((int) galaxy[i].getPosition().x - 5, (int) galaxy[i].getPosition().y - 5, 10, 10)
+							.contains(input.getMousePositionOnScreen())) {
+						galaxy[i].setSelected(true);
+						currentStar = i;
+					} else {
+						galaxy[i].setSelected(false);
+					}
+				}
+			}
+			if (input.getMouseWheelUp()) {
+				if (zoom < 3.0) {
+					zoom += 0.1;
+				} else {
+					State.state = State.STATE.SOLAR;
+					galaxy[currentStar].update();
+				}
+				input.stopMouseWheel();
+			}
+			if (input.getMouseWheelDown()) {
+				if (zoom > 0.2) {
+					zoom -= 0.1;
+				}
+				input.stopMouseWheel();
+			}
 			break;
 		case SOLAR:
+			createSystem();
+			galaxy[currentStar].update();
 			for (int i = 0; i < solarSystems[currentStar].length; i++) {
 				if (solarSystems[currentStar][i] != null) {
 					solarSystems[currentStar][i].update();
@@ -182,8 +177,8 @@ public class Galaxy extends JPanel {
 		case GALACTIC:
 			at = new AffineTransform();
 			at.scale(zoom, zoom);
-			double xTrans = - (InputHandler.midPoint.x - InputHandler.screenSize.width/(zoom * 2));
-			double yTrans = - (InputHandler.midPoint.y - InputHandler.screenSize.height/(zoom * 2));
+			double xTrans = -(InputHandler.midPoint.x - InputHandler.screenSize.width / (zoom * 2));
+			double yTrans = -(InputHandler.midPoint.y - InputHandler.screenSize.height / (zoom * 2));
 			at.translate(xTrans, yTrans);
 			g2d.transform(at);
 			for (int i = 0; i < numOfStars; i++) {
@@ -191,6 +186,7 @@ public class Galaxy extends JPanel {
 			}
 			break;
 		case SOLAR:
+			galaxy[currentStar].draw(g2d);
 			for (int i = 0; i < solarSystems[currentStar].length; i++) {
 				if (solarSystems[currentStar][i] != null) {
 					solarSystems[currentStar][i].draw(g2d);
@@ -218,6 +214,19 @@ public class Galaxy extends JPanel {
 			break;
 		default:
 			break;
+		}
+	}
+
+	private void createSystem() {
+		if (!galaxy[currentStar].isCreated()) {
+			for (int i = 0; i < MathHelper.random.nextInt(maxNumOfPlanets); i++) {
+				double distance = MathHelper.random.nextDouble() * InputHandler.screenSize.height / 2
+						+ galaxy[currentStar].getSize() * 25;
+				double size = MathHelper.random.nextDouble() * 5;
+				solarSystems[currentStar][i] = new Planet(distance, MathHelper.random.nextDouble() * 360, size,
+						new Biome(distance, size), galaxy[currentStar].getSeed() + i);
+			}
+			galaxy[currentStar].setCreated(true);
 		}
 	}
 
@@ -252,8 +261,8 @@ public class Galaxy extends JPanel {
 	public void setZoom(double zoom) {
 		this.zoom = zoom;
 	}
-	
-	public void incrementZoom(double amount){
+
+	public void incrementZoom(double amount) {
 		zoom += amount;
 	}
 
