@@ -47,6 +47,7 @@ public class Frame extends AbstractMain {
 
 	@Override
 	public void update() {
+		requestFocus();
 		switch (State.state) {
 		case MAIN_MENU:
 			if (menu.isNewGame) {
@@ -125,12 +126,16 @@ public class Frame extends AbstractMain {
 			galaxy.update();
 			break;
 		case SOLAR:
+			galaxy.update();
 			break;
 		case PLANETARY:
+			galaxy.update();
 			break;
 		case SURFACE_PLANETARY:
+			galaxy.update();
 			break;
 		case SATELLITE:
+			galaxy.update();
 			break;
 		case DUNGEON:
 			break;
@@ -164,12 +169,28 @@ public class Frame extends AbstractMain {
 			g2d.drawImage(offImage, 0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height, null);
 			break;
 		case SOLAR:
+			offGraphics.setColor(Color.BLACK);
+			offGraphics.fillRect(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height);
+			galaxy.draw(offGraphics);
+			g2d.drawImage(offImage, 0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height, null);
 			break;
 		case PLANETARY:
+			offGraphics.setColor(Color.BLACK);
+			offGraphics.fillRect(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height);
+			galaxy.draw(offGraphics);
+			g2d.drawImage(offImage, 0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height, null);
 			break;
 		case SURFACE_PLANETARY:
+			offGraphics.setColor(Color.BLACK);
+			offGraphics.fillRect(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height);
+			galaxy.draw(offGraphics);
+			g2d.drawImage(offImage, 0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height, null);
 			break;
 		case SATELLITE:
+			offGraphics.setColor(Color.BLACK);
+			offGraphics.fillRect(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height);
+			galaxy.draw(offGraphics);
+			g2d.drawImage(offImage, 0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height, null);
 			break;
 		case DUNGEON:
 			break;

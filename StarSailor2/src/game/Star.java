@@ -14,25 +14,24 @@ public class Star extends PlanetaryBody {
 
 	private Point2D.Double destination;
 	private int indexOfDestination;
-	private String name;
-	private boolean discovered = false;
+	private boolean hasHyper = false;
 
-	public Star(double distance, double angle, double size, Color color) {
-		super(distance, angle, size, color);
-		System.out.println(NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2));
+	public Star(double distance, double angle, double size, Color color, long seed) {
+		super(distance, angle, size, color, seed);
 	}
 
 	@Override
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
-			incrementAngle(0.001);
+			incrementAngle(0.0001);
 			getXAndY();
 			break;
 		case SOLAR:
 			if(!discovered){
 				discovered = true;
-				name = NoiseGenerator.generateName(MathHelper.random.nextInt(2) + 2);
+				name = noiseGen.generateName(MathHelper.random.nextInt(2) + 2);
+				noise = noiseGen.getPerlinNoise((int)size*10, (int)size*10, 8, 10);
 				System.out.println(name);
 			}
 			break;
@@ -58,16 +57,24 @@ public class Star extends PlanetaryBody {
 		switch (State.state) {
 		case GALACTIC:
 			g2d.setColor(Color.cyan);
-			if (destination != null) {
+			if (destination != null && getHyper()) {
 				g2d.drawLine((int) (position.x), (int) (position.y), (int) (destination.x), (int) (destination.y));
 			}
 			g2d.setColor(color);
 			g2d.fillOval((int) (position.x), (int) (position.y), (int) size, (int) size);
 			break;
 		case SOLAR:
-			g2d.setColor(color);
-			g2d.fillOval((int) (InputHandler.midPoint.x - (size * 5)), (int) (InputHandler.midPoint.y - (size * 5)),
-					(int) size * 10, (int) size * 10);
+			//g2d.setColor(color);
+			//g2d.fillOval((int) (InputHandler.midPoint.x - (size * 5)), (int) (InputHandler.midPoint.y - (size * 5)),
+				//	(int) size * 10, (int) size * 10);
+			for(int i = 0; i < noise.length; i++){
+				for(int j = 0; j < noise[0].length; j++){
+					if(bounds.contains(new Point2D.Double(i + InputHandler.midPoint.x - (size*5), j + InputHandler.midPoint.y - (size*5)))){
+						g2d.setColor(new Color((int) (color.getRed() * noise[i][j]), (int) (color.getGreen() * noise[i][j]), (int) (color.getBlue() * noise[i][j])));
+						g2d.fillRect((int) (i + InputHandler.midPoint.x - (size*5)), (int) (j + InputHandler.midPoint.y - (size*5)), 1, 1);
+					}
+				}
+			}
 			break;
 		case PLANETARY:
 			break;
@@ -97,6 +104,14 @@ public class Star extends PlanetaryBody {
 
 	public void updateHyperSpaceLane(Point2D.Double destination) {
 		this.destination = destination;
+	}
+	
+	public void setHyper(boolean hyper){
+		hasHyper = hyper;
+	}
+	
+	public boolean getHyper(){
+		return hasHyper;
 	}
 
 }
