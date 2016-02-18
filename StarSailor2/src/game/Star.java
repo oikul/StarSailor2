@@ -23,7 +23,7 @@ public class Star extends PlanetaryBody {
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
-			incrementAngle(0.0001);
+			incrementAngle(0.00001);
 			getXAndY();
 			break;
 		case SOLAR:
@@ -59,7 +59,7 @@ public class Star extends PlanetaryBody {
 				g2d.drawLine((int) (position.x), (int) (position.y), (int) (destination.x), (int) (destination.y));
 			}
 			g2d.setColor(color);
-			g2d.fillOval((int) (position.x), (int) (position.y), (int) size, (int) size);
+			g2d.fillOval((int) (position.x - size/2), (int) (position.y - size/2), (int) size, (int) size);
 			break;
 		case SOLAR:
 			g2d.setColor(color);

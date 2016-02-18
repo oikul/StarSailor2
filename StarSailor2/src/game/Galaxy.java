@@ -24,7 +24,7 @@ public class Galaxy extends JPanel {
 	private int currentStar, currentPlanet, currentSatellite;
 	private long seed;
 	private InputHandler input;
-	private double zoom = 1.0;
+	private double zoomGalactic = 1.0, zoomSolar = 0.2, zoomPlanetary = 1.0;
 	private AffineTransform at;
 
 	public Galaxy(long seed, InputHandler input) {
@@ -87,7 +87,7 @@ public class Galaxy extends JPanel {
 					MathHelper.random.nextDouble() * 10 + 1, color, seed + i);
 		}
 		for (int i = 0; i < galaxy.length; i++) {
-			double closest = 500;
+			double closest = 5000;
 			for (int j = 0; j < galaxy.length; j++) {
 				if (MathHelper.getDistance(galaxy[i].getPosition(), galaxy[j].getPosition()) < closest && i != j) {
 					galaxy[i].addHyperSpaceLane(galaxy[j].getPosition(), j);
@@ -97,6 +97,26 @@ public class Galaxy extends JPanel {
 			}
 		}
 		currentStar = MathHelper.random.nextInt(numOfStars);
+		if(galaxy[currentStar].getPosition().x > InputHandler.midPoint.x){
+			for (int i = 0; i < numOfStars; i++) {
+				galaxy[i].panRight(galaxy[currentStar].getPosition().x - InputHandler.midPoint.x);
+			}
+		}
+		if(galaxy[currentStar].getPosition().x < InputHandler.midPoint.x){
+			for (int i = 0; i < numOfStars; i++) {
+				galaxy[i].panLeft(InputHandler.midPoint.x - galaxy[currentStar].getPosition().x);
+			}
+		}
+		if(galaxy[currentStar].getPosition().y > InputHandler.midPoint.y){
+			for (int i = 0; i < numOfStars; i++) {
+				galaxy[i].panDown(galaxy[currentStar].getPosition().y - InputHandler.midPoint.y);
+			}
+		}
+		if(galaxy[currentStar].getPosition().y < InputHandler.midPoint.y){
+			for (int i = 0; i < numOfStars; i++) {
+				galaxy[i].panUp(InputHandler.midPoint.y - galaxy[currentStar].getPosition().y);
+			}
+		}
 	}
 
 	public void update() {
@@ -112,10 +132,30 @@ public class Galaxy extends JPanel {
 					galaxy[i].updateHyperSpaceLane(newPos);
 				}
 			}
+			if(galaxy[currentStar].getPosition().x > InputHandler.midPoint.x){
+				for (int i = 0; i < numOfStars; i++) {
+					galaxy[i].panRight(0.3);
+				}
+			}
+			if(galaxy[currentStar].getPosition().x < InputHandler.midPoint.x){
+				for (int i = 0; i < numOfStars; i++) {
+					galaxy[i].panLeft(0.3);
+				}
+			}
+			if(galaxy[currentStar].getPosition().y > InputHandler.midPoint.y){
+				for (int i = 0; i < numOfStars; i++) {
+					galaxy[i].panDown(0.3);
+				}
+			}
+			if(galaxy[currentStar].getPosition().y < InputHandler.midPoint.y){
+				for (int i = 0; i < numOfStars; i++) {
+					galaxy[i].panUp(0.3);
+				}
+			}
 			if (input.isMouseDown(MouseEvent.BUTTON1)) {
 				for (int i = 0; i < numOfStars; i++) {
 					if (new Rectangle((int) galaxy[i].getPosition().x - 5, (int) galaxy[i].getPosition().y - 5, 10, 10)
-							.contains(input.getMousePositionOnScreen())) {
+							.contains(input.getMousePositionOnScreen()) && new Rectangle(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height).contains(solarSystems[currentStar][i].getPosition())) {
 						galaxy[i].setSelected(true);
 						currentStar = i;
 					} else {
@@ -124,8 +164,8 @@ public class Galaxy extends JPanel {
 				}
 			}
 			if (input.getMouseWheelUp()) {
-				if (zoom < 3.0) {
-					zoom += 0.1;
+				if (zoomGalactic < 2.0) {
+					zoomGalactic += 0.1;
 				} else {
 					State.state = State.STATE.SOLAR;
 					galaxy[currentStar].update();
@@ -133,8 +173,8 @@ public class Galaxy extends JPanel {
 				input.stopMouseWheel();
 			}
 			if (input.getMouseWheelDown()) {
-				if (zoom > 0.2) {
-					zoom -= 0.1;
+				if (zoomGalactic > 0.2) {
+					zoomGalactic -= 0.1;
 				}
 				input.stopMouseWheel();
 			}
@@ -146,6 +186,24 @@ public class Galaxy extends JPanel {
 				if (solarSystems[currentStar][i] != null) {
 					solarSystems[currentStar][i].update();
 				}
+			}
+			if (input.getMouseWheelUp()) {
+				if (zoomSolar < 2.0) {
+					zoomSolar += 0.1;
+				} else {
+					State.state = State.STATE.PLANETARY;
+					solarSystems[currentStar][currentPlanet].update();
+				}
+				input.stopMouseWheel();
+			}
+			if (input.getMouseWheelDown()) {
+				if (zoomSolar > 0.2) {
+					zoomSolar -= 0.1;
+				} else {
+					State.state = State.STATE.GALACTIC;
+					update();
+				}
+				input.stopMouseWheel();
 			}
 			break;
 		case PLANETARY:
@@ -173,12 +231,13 @@ public class Galaxy extends JPanel {
 	}
 
 	public void draw(Graphics2D g2d) {
+		double xTrans, yTrans;
 		switch (State.state) {
 		case GALACTIC:
 			at = new AffineTransform();
-			at.scale(zoom, zoom);
-			double xTrans = -(InputHandler.midPoint.x - InputHandler.screenSize.width / (zoom * 2));
-			double yTrans = -(InputHandler.midPoint.y - InputHandler.screenSize.height / (zoom * 2));
+			at.scale(zoomGalactic, zoomGalactic);
+			xTrans = -(InputHandler.midPoint.x - InputHandler.screenSize.width / (zoomGalactic * 2));
+			yTrans = -(InputHandler.midPoint.y - InputHandler.screenSize.height / (zoomGalactic * 2));
 			at.translate(xTrans, yTrans);
 			g2d.transform(at);
 			for (int i = 0; i < numOfStars; i++) {
@@ -186,9 +245,15 @@ public class Galaxy extends JPanel {
 			}
 			break;
 		case SOLAR:
+			at = new AffineTransform();
+			at.scale(zoomSolar, zoomSolar);
+			xTrans = -(InputHandler.midPoint.x - InputHandler.screenSize.width / (zoomSolar * 2));
+			yTrans = -(InputHandler.midPoint.y - InputHandler.screenSize.height / (zoomSolar * 2));
+			at.translate(xTrans, yTrans);
+			g2d.transform(at);
 			galaxy[currentStar].draw(g2d);
 			for (int i = 0; i < solarSystems[currentStar].length; i++) {
-				if (solarSystems[currentStar][i] != null) {
+				if (solarSystems[currentStar][i] != null && new Rectangle(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height).contains(solarSystems[currentStar][i].getPosition())) {
 					solarSystems[currentStar][i].draw(g2d);
 				}
 			}
@@ -254,16 +319,60 @@ public class Galaxy extends JPanel {
 		this.currentSatellite = currentSattelite;
 	}
 
-	public double getZoom() {
-		return zoom;
+	public double getZoomGalactic() {
+		return zoomGalactic;
 	}
 
-	public void setZoom(double zoom) {
-		this.zoom = zoom;
+	public void setZoomGalactic(double zoomGalactic) {
+		this.zoomGalactic = zoomGalactic;
 	}
 
-	public void incrementZoom(double amount) {
-		zoom += amount;
+	public void incrementZoomGalactic(double amount) {
+		zoomGalactic += amount;
+	}
+
+	public int getCurrentSatellite() {
+		return currentSatellite;
+	}
+
+	public void setCurrentSatellite(int currentSatellite) {
+		this.currentSatellite = currentSatellite;
+	}
+
+	public long getSeed() {
+		return seed;
+	}
+
+	public void setSeed(long seed) {
+		this.seed = seed;
+	}
+
+	public double getZoomSolar() {
+		return zoomSolar;
+	}
+
+	public void setZoomSolar(double zoomSolar) {
+		this.zoomSolar = zoomSolar;
+	}
+
+	public double getZoomPlanetary() {
+		return zoomPlanetary;
+	}
+
+	public void setZoomPlanetary(double zoomPlanetary) {
+		this.zoomPlanetary = zoomPlanetary;
+	}
+
+	public int getNumOfStars() {
+		return numOfStars;
+	}
+
+	public int getMaxNumOfPlanets() {
+		return maxNumOfPlanets;
+	}
+
+	public int getMaxNumOfSatellites() {
+		return maxNumOfSatellites;
 	}
 
 }

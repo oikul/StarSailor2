@@ -19,7 +19,7 @@ public class Planet extends PlanetaryBody {
 		case GALACTIC:
 			break;
 		case SOLAR:
-			incrementAngle(0.0001);
+			incrementAngle(0.00001);
 			getXAndY();
 			break;
 		case PLANETARY:
