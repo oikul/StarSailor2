@@ -5,7 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 import javax.swing.JPanel;
 
@@ -25,7 +27,7 @@ public class Galaxy extends JPanel {
 	private long seed;
 	private InputHandler input;
 	private double zoomGalactic = 1.0, zoomSolar = 0.2, zoomPlanetary = 1.0;
-	private AffineTransform at;
+	private AffineTransform at, reverseat;
 
 	public Galaxy(long seed, InputHandler input) {
 		requestFocus();
@@ -97,25 +99,18 @@ public class Galaxy extends JPanel {
 			}
 		}
 		currentStar = MathHelper.random.nextInt(numOfStars);
-		if(galaxy[currentStar].getPosition().x > InputHandler.midPoint.x){
-			for (int i = 0; i < numOfStars; i++) {
-				galaxy[i].panRight(galaxy[currentStar].getPosition().x - InputHandler.midPoint.x);
-			}
+		galaxy[currentStar].setSelected(true);
+		if (galaxy[currentStar].getPosition().x > InputHandler.midPoint.x) {
+			galaxy[currentStar].panRight(galaxy[currentStar].getPosition().x - InputHandler.midPoint.x);
 		}
-		if(galaxy[currentStar].getPosition().x < InputHandler.midPoint.x){
-			for (int i = 0; i < numOfStars; i++) {
-				galaxy[i].panLeft(InputHandler.midPoint.x - galaxy[currentStar].getPosition().x);
-			}
+		if (galaxy[currentStar].getPosition().x < InputHandler.midPoint.x) {
+			galaxy[currentStar].panLeft(InputHandler.midPoint.x - galaxy[currentStar].getPosition().x);
 		}
-		if(galaxy[currentStar].getPosition().y > InputHandler.midPoint.y){
-			for (int i = 0; i < numOfStars; i++) {
-				galaxy[i].panDown(galaxy[currentStar].getPosition().y - InputHandler.midPoint.y);
-			}
+		if (galaxy[currentStar].getPosition().y > InputHandler.midPoint.y) {
+			galaxy[currentStar].panDown(galaxy[currentStar].getPosition().y - InputHandler.midPoint.y);
 		}
-		if(galaxy[currentStar].getPosition().y < InputHandler.midPoint.y){
-			for (int i = 0; i < numOfStars; i++) {
-				galaxy[i].panUp(InputHandler.midPoint.y - galaxy[currentStar].getPosition().y);
-			}
+		if (galaxy[currentStar].getPosition().y < InputHandler.midPoint.y) {
+			galaxy[currentStar].panUp(InputHandler.midPoint.y - galaxy[currentStar].getPosition().y);
 		}
 	}
 
@@ -125,37 +120,50 @@ public class Galaxy extends JPanel {
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].update();
 			}
-			for (int i = 0; i < numOfStars; i++) {
+			/*for (int i = 0; i < numOfStars; i++) {
 				int index = galaxy[i].getIndexOfDestination();
 				Point2D.Double newPos = galaxy[galaxy[i].getIndexOfDestination()].getPosition();
 				if (index != 0 && galaxy[i].getHyper() && newPos != null) {
 					galaxy[i].updateHyperSpaceLane(newPos);
 				}
-			}
-			if(galaxy[currentStar].getPosition().x > InputHandler.midPoint.x){
-				for (int i = 0; i < numOfStars; i++) {
-					galaxy[i].panRight(0.3);
+			}*/
+			/*if (at != null) {
+				Point2D.Double point = galaxy[currentStar].getPosition();
+				at.transform(point, point);
+				if (point.x > InputHandler.midPoint.x) {
+					galaxy[currentStar].panRight(1);
 				}
-			}
-			if(galaxy[currentStar].getPosition().x < InputHandler.midPoint.x){
-				for (int i = 0; i < numOfStars; i++) {
-					galaxy[i].panLeft(0.3);
+				if (point.x < InputHandler.midPoint.x) {
+					galaxy[currentStar].panLeft(1);
 				}
-			}
-			if(galaxy[currentStar].getPosition().y > InputHandler.midPoint.y){
-				for (int i = 0; i < numOfStars; i++) {
-					galaxy[i].panDown(0.3);
+				if (point.y > InputHandler.midPoint.y) {
+					galaxy[currentStar].panDown(1);
 				}
-			}
-			if(galaxy[currentStar].getPosition().y < InputHandler.midPoint.y){
-				for (int i = 0; i < numOfStars; i++) {
-					galaxy[i].panUp(0.3);
+				if (point.y < InputHandler.midPoint.y) {
+					galaxy[currentStar].panUp(1);
 				}
+			}*/
+			Point2D.Double point = galaxy[currentStar].getPosition();
+			at.transform(point, point);
+			if (point.x > InputHandler.midPoint.x) {
+				galaxy[currentStar].panRight(point.x - InputHandler.midPoint.x);
+			}
+			if (point.x < InputHandler.midPoint.x) {
+				galaxy[currentStar].panLeft(InputHandler.midPoint.x - point.x);
+			}
+			if (point.y > InputHandler.midPoint.y) {
+				galaxy[currentStar].panDown(point.y - InputHandler.midPoint.y);
+			}
+			if (point.y < InputHandler.midPoint.y) {
+				galaxy[currentStar].panUp(InputHandler.midPoint.y - point.y);
 			}
 			if (input.isMouseDown(MouseEvent.BUTTON1)) {
+				Point2D.Double point1 = new Point2D.Double(input.getMousePositionOnScreen().getX(),
+						input.getMousePositionOnScreen().getY());
+				reverseat.transform(point1, point1);
 				for (int i = 0; i < numOfStars; i++) {
 					if (new Rectangle((int) galaxy[i].getPosition().x - 5, (int) galaxy[i].getPosition().y - 5, 10, 10)
-							.contains(input.getMousePositionOnScreen()) && new Rectangle(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height).contains(solarSystems[currentStar][i].getPosition())) {
+							.contains(point1)) {
 						galaxy[i].setSelected(true);
 						currentStar = i;
 					} else {
@@ -236,9 +244,16 @@ public class Galaxy extends JPanel {
 		case GALACTIC:
 			at = new AffineTransform();
 			at.scale(zoomGalactic, zoomGalactic);
-			xTrans = -(InputHandler.midPoint.x - InputHandler.screenSize.width / (zoomGalactic * 2));
-			yTrans = -(InputHandler.midPoint.y - InputHandler.screenSize.height / (zoomGalactic * 2));
+			xTrans = -(InputHandler.midPoint.x - galaxy[currentStar].getxDif()
+					- InputHandler.screenSize.width / (zoomGalactic * 2));
+			yTrans = -(InputHandler.midPoint.y - galaxy[currentStar].getyDif()
+					- InputHandler.screenSize.height / (zoomGalactic * 2));
 			at.translate(xTrans, yTrans);
+			try {
+				reverseat = at.createInverse();
+			} catch (NoninvertibleTransformException e) {
+				e.printStackTrace();
+			}
 			g2d.transform(at);
 			for (int i = 0; i < numOfStars; i++) {
 				galaxy[i].draw(g2d);
@@ -253,7 +268,9 @@ public class Galaxy extends JPanel {
 			g2d.transform(at);
 			galaxy[currentStar].draw(g2d);
 			for (int i = 0; i < solarSystems[currentStar].length; i++) {
-				if (solarSystems[currentStar][i] != null && new Rectangle(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height).contains(solarSystems[currentStar][i].getPosition())) {
+				if (solarSystems[currentStar][i] != null
+						&& new Rectangle(0, 0, InputHandler.screenSize.width, InputHandler.screenSize.height)
+								.contains(solarSystems[currentStar][i].getPosition())) {
 					solarSystems[currentStar][i].draw(g2d);
 				}
 			}

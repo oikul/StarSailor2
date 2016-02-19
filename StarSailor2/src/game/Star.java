@@ -23,11 +23,11 @@ public class Star extends PlanetaryBody {
 	public void update() {
 		switch (State.state) {
 		case GALACTIC:
-			incrementAngle(0.00001);
+			incrementAngle(0.000001);
 			getXAndY();
 			break;
 		case SOLAR:
-			if(!discovered){
+			if (!discovered) {
 				discovered = true;
 				name = noiseGen.generateName(MathHelper.random.nextInt(2) + 2);
 				System.out.println("star name: " + name);
@@ -54,12 +54,18 @@ public class Star extends PlanetaryBody {
 	public void draw(Graphics2D g2d) {
 		switch (State.state) {
 		case GALACTIC:
-			g2d.setColor(Color.cyan);
-			if (destination != null && getHyper()) {
-				g2d.drawLine((int) (position.x), (int) (position.y), (int) (destination.x), (int) (destination.y));
+			/*
+			 * if (destination != null && getHyper()) { g2d.drawLine((int)
+			 * (position.x), (int) (position.y), (int) (destination.x), (int)
+			 * (destination.y)); }
+			 */
+			if (selected) {
+				g2d.setColor(Color.cyan);
+				g2d.drawRect((int) (position.x - size / 2) - 5, (int) (position.y - size / 2) - 5, (int) size + 10,
+						(int) size + 10);
 			}
 			g2d.setColor(color);
-			g2d.fillOval((int) (position.x - size/2), (int) (position.y - size/2), (int) size, (int) size);
+			g2d.fillOval((int) (position.x - size / 2), (int) (position.y - size / 2), (int) size, (int) size);
 			break;
 		case SOLAR:
 			g2d.setColor(color);
@@ -95,12 +101,12 @@ public class Star extends PlanetaryBody {
 	public void updateHyperSpaceLane(Point2D.Double destination) {
 		this.destination = destination;
 	}
-	
-	public void setHyper(boolean hyper){
+
+	public void setHyper(boolean hyper) {
 		hasHyper = hyper;
 	}
-	
-	public boolean getHyper(){
+
+	public boolean getHyper() {
 		return hasHyper;
 	}
 
